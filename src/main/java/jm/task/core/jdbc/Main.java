@@ -1,5 +1,7 @@
 package jm.task.core.jdbc;
 
+import jm.task.core.jdbc.dao.UserDao;
+import jm.task.core.jdbc.dao.UserDaoJDBCImpl;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.service.UserService;
 import jm.task.core.jdbc.service.UserServiceImpl;
@@ -16,9 +18,10 @@ public class Main {
         service.saveUser("Johny", "Depp", (byte) 23);
 
         // Получение всех User из базы и вывод в консоль ( должен быть переопределен toString в классе User)
-        for (User user: service.getAllUsers()) {
-            System.out.println(user);
-        }
+//        for (User user: service.getAllUsers()) {
+//            System.out.println(user);
+//        }
+        System.out.println(service.getAllUsers());
 
         // Очистка таблицы User(ов)
         service.cleanUsersTable();
