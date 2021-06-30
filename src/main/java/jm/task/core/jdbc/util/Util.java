@@ -1,7 +1,11 @@
 package jm.task.core.jdbc.util;
 
+import jm.task.core.jdbc.model.User;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.cfg.Environment;
+import org.hibernate.service.ServiceRegistry;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,19 +14,34 @@ import java.util.Properties;
 
 public class Util {
     private static Connection connection;
+    private static SessionFactory sessionFactory;
 
     public static SessionFactory getSessionFactory() {
-//        Properties properties = new Properties();
-//
-//        properties.setProperty("hibernate.connection.url", "jdbc:mysql://<your-host>:<your-port>/<your-dbname>");
-//        properties.setProperty("dialect", "org.hibernate.dialect.PostgresSQL");
-//        properties.setProperty("hibernate.connection.username", "<your-user>");
-//        properties.setProperty("hibernate.connection.password", "<your-password>");
-//        properties.setProperty("hibernate.connection.driver_class", "org.postgresql.Driver");
-//        //properties.setProperty("show_sql", true); //If you wish to see the generated sql query
-//
-//        SessionFactory sessionFactory = new Configuration().addProperties(properties).buildSessionFactory();
-        return HibernateSessionFactoryUtil.getSessionFactory();
+        if (sessionFactory == null) {
+            try {
+                Properties properties = new Properties();
+
+                properties.setProperty(Environment.URL, "jdbc:mysql://localhost:3306/mentor_jdbc?autoReconnect=true&useSSL=false");
+                properties.setProperty(Environment.USER, "mentor");
+                properties.setProperty(Environment.PASS, "mu_password");
+
+                Configuration configuration = new Configuration();
+                configuration.setProperties(properties);
+                configuration.addAnnotatedClass(User.class);
+
+                ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
+                        .applySettings(configuration.getProperties())
+                        .build()
+                        ;
+
+                sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+
+            } catch (Exception e) {
+                System.out.println("Исключение!" + e);
+            }
+        }
+
+        return sessionFactory;
     }
 
     public static Connection getMySQLConnection() throws SQLException, ClassNotFoundException {
@@ -42,13 +61,7 @@ public class Util {
             String hostName,
             String dbName,
             String userName,
-            String password) throws SQLException, ClassNotFoundException {
-        // Declare the class Driver for MySQL DB
-        // This is necessary with Java 5 (or older)
-        // Java6 (or newer) automatically find the appropriate driver.
-        // If you use Java> 5, then this line is not needed.
-        // Class.forName("com.mysql.jdbc.Driver");
-
+            String password) throws SQLException {
         String connectionURL = "jdbc:mysql://" + hostName + ":3306/" + dbName + "?autoReconnect=true&useSSL=false";
 
         return DriverManager.getConnection(connectionURL, userName, password);

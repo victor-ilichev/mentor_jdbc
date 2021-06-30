@@ -13,7 +13,6 @@ public class UserDaoHibernateImpl implements UserDao {
 
     }
 
-
     @Override
     public void createUsersTable() {
         Session session = Util.getSessionFactory().openSession();
@@ -33,9 +32,9 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public void dropUsersTable() {
         Session session = Util.getSessionFactory().openSession();
-        Transaction t = session.beginTransaction();
+        Transaction transaction = session.beginTransaction();
         session.createSQLQuery("DROP TABLE IF EXISTS `users`;").executeUpdate();
-        t.commit();
+        transaction.commit();
         session.close();
     }
 
@@ -53,11 +52,11 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public void removeUserById(long id) {
         Session session = Util.getSessionFactory().openSession();
-        Transaction tx1 = session.beginTransaction();
+        Transaction transaction = session.beginTransaction();
         if (session.get(User.class, id) != null) {
             session.delete(session.get(User.class, id));
         }
-        tx1.commit();
+        transaction.commit();
         session.close();
     }
 
@@ -74,17 +73,9 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public void cleanUsersTable() {
         Session session = Util.getSessionFactory().openSession();
-        Transaction t = session.beginTransaction();
-        session.createSQLQuery("TRUNCATE TABLE `users`;").executeUpdate();
-        t.commit();
+        Transaction transaction = session.beginTransaction();
+        session.createQuery("DELETE FROM User").executeUpdate();
+        transaction.commit();
         session.close();
-//        Session session = Util.getSessionFactory().openSession();
-//        Transaction t1 = session.beginTransaction();
-//        session.createQuery("DELETE FROM User").executeUpdate(); // HQL запрос
-////        for (User user : getAllUsers()) {
-////            session.delete(user); // CRITERIA API
-////        }
-//        t1.commit();
-//        session.close();
     }
 }
