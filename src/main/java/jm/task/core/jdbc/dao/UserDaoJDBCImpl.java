@@ -3,10 +3,7 @@ package jm.task.core.jdbc.dao;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +31,21 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void removeUserById(long id) {
-        executeQuery("DELETE FROM `users` WHERE id=" + id);
+        try {
+            Connection connection = Util.getMySQLConnection();
+            connection.setAutoCommit(false);
+
+            PreparedStatement statement =
+                    connection.prepareStatement("DELETE FROM `users` WHERE id=?");
+            statement.setLong(1, id);
+            statement.executeUpdate();
+
+            connection.commit();
+
+            connection.setAutoCommit(true);
+        } catch (SQLException | ClassNotFoundException throwables) {
+            throwables.printStackTrace();
+        }
     }
 
     public List<User> getAllUsers() {
