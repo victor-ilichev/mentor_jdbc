@@ -19,6 +19,9 @@ public class Main {
         service.saveUser("Johny", "Depp", (byte) 23);
         service.saveUser("Foo", "Bar", (byte) 25);
 
+        service.removeUserById(4);
+        service.saveUser("John", "Petrucci", (byte) 53);
+
         // Получение всех User из базы и вывод в консоль ( должен быть переопределен toString в классе User)
         System.out.println(service.getAllUsers());
 
